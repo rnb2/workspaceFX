@@ -10,6 +10,11 @@ import java.util.Properties;
 import com.rnb2.util.AppUtil;
 import com.sun.scenario.effect.ColorAdjust;
 
+import javafx.animation.FillTransition;
+import javafx.animation.FillTransitionBuilder;
+import javafx.animation.StrokeTransition;
+import javafx.animation.StrokeTransitionBuilder;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.collections.FXCollections;
@@ -32,14 +37,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.RectangleBuilder;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class MouseEventsSample extends Application {
 	
 	protected Properties properties = new Properties();
     private String title = "testF";
 	private final String fileName = AppUtil.computeFileName(title, "location ");
-
-
+	private FillTransition transition;
+	
 	//create a console for logging mouse events
 
     final ListView<String> console = new ListView<String>();
@@ -90,6 +96,21 @@ public class MouseEventsSample extends Application {
  
 
     private void init(Stage primaryStage) {
+    	
+    	
+    	transition = FillTransitionBuilder.create()
+
+                 .duration(Duration.seconds(1))
+
+                 .fromValue(Color.DODGERBLUE)
+
+                 .toValue(Color.AQUA)
+
+                 //.cycleCount(Timeline.INDEFINITE)
+
+                 //.autoReverse(true)
+
+                 .build();
 
         Group root = new Group();
 
@@ -223,13 +244,15 @@ public class MouseEventsSample extends Application {
 
         //create a circle with desired name,  color and radius
 
-        final Circle circle = new Circle(radius, new RadialGradient(0, 0, 0.2, 0.3, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
+        RadialGradient radialGradient = new RadialGradient(0, 0, 0.2, 0.3, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
 
             new Stop(0, Color.rgb(250,250,255)),
 
             new Stop(1, color)
 
-        }));
+        });
+        
+		final Circle circle = new Circle(radius, radialGradient);
 
         //add a shadow effect
 
@@ -296,13 +319,18 @@ public class MouseEventsSample extends Application {
 
         circle.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
-            public void handle(MouseEvent me) {
+            
+
+			public void handle(MouseEvent me) {
 
                 //change the z-coordinate of the circle
 
                 circle.toFront();
                 
-
+               
+                transition.setShape(circle);
+                transition.play();
+                
                 showOnConsole("Mouse entered " + name);
 
             }
@@ -314,7 +342,16 @@ public class MouseEventsSample extends Application {
             public void handle(MouseEvent me) {
 
                 showOnConsole("Mouse exited " +name);
+                transition.stop();
+                RadialGradient radialGradient = new RadialGradient(0, 0, 0.2, 0.3, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
 
+                        new Stop(0, Color.rgb(250,250,255)),
+
+                        new Stop(1, color)
+
+                    });
+                    
+                circle.setFill(radialGradient);
             }
 
         });
@@ -375,7 +412,7 @@ public class MouseEventsSample extends Application {
     }
 
  
-
+    
     private void showOnConsole(String text) {
 
          //if there is 8 items in list, delete first log message, shift other logs and  add a new one to end position
