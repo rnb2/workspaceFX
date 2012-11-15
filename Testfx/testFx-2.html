@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <script type="text/javascript" 
+                src="http://java.com/js/dtjava.js"></script>
+        <script>
+            function mayBeOfferLaunch() {
+                var platform = new dtjava.Platform({'javafx' : '2.1+'});
+ 
+                //check if validate find any problems
+                if (dtjava.validate(platform) == null) {
+                    var t = document.getElementById("text");
+                    t.innerHTML = "<a href='TestFx.jnlp' " +
+                    "onclick='dtjava.launch({url: 'TestFx.jnlp'}); return false;'>" +
+                    "Launch me!</a>";
+                }
+            }
+            dtjava.addOnloadCallback(mayBeOfferLaunch);
+        </script>
+    </head>
+    <body>
+        <div id="text">To view this content you need 
+       <a href="http://javafx.com">to install 
+           JavaFX Runtime 2.1</a>.</div>
+    </body>
+</html>

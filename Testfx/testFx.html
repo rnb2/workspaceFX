@@ -1,0 +1,22 @@
+<html>
+<head>
+    <script type="text/javascript" src="http://java.com/js/dtjava.js"></script>
+    <script>
+        function deployIt() {
+            dtjava.embed(
+                    {         id: "myApp",
+                             url: "TestFx.jnlp",
+                           width: 300,
+                          height: 200,
+                     placeholder: "place"
+                    },
+                    { javafx: "2.1+" },
+                    {}
+            );
+        }
+        dtjava.addOnloadCallback(deployIt);
+    </script>
+</head>
+<body>
+    <div id="place"></div>           
+</body></html>

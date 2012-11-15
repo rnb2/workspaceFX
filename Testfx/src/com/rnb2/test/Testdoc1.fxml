@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml">
+	<!-- TODO Add Nodes -->
+	<Circle  centerX="10" centerY="9"/>
+</AnchorPane>
+
