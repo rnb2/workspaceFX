@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import com.rnb2.util.AppUtil;
@@ -19,15 +21,23 @@ import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -36,6 +46,7 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.RectangleBuilder;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -45,6 +56,10 @@ public class MouseEventsSample extends Application {
     private String title = "testF";
 	private final String fileName = AppUtil.computeFileName(title, "location ");
 	private FillTransition transition;
+    //private  AnchorPane pane = null;
+    private static final String resourcePath = "/com/rnb2/resources/fxml/";
+    private Button buttonAdd = new Button("Add");
+
 	
 	//create a console for logging mouse events
 
@@ -93,9 +108,37 @@ public class MouseEventsSample extends Application {
     private Point2D dragAnchor;
 
     private double newXPosition;
- 
-
+    
     private void init(Stage primaryStage) {
+    	
+      	       
+    	AnchorPane pane = null;
+    	AnchorPane pane2 = null;
+    	
+		try {
+			pane = createPane(resourcePath +  "truba2.fxml");
+			pane2 = createPane(resourcePath +  "truba2.fxml");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		final ArrayList<AnchorPane> panes = new ArrayList<AnchorPane>();
+		panes.add(pane2);
+		panes.add(pane);
+		
+    	
+    	System.out.println("pane " + pane);
+    	
+    	Rectangle trubaPart =  lookup(pane, "#truba2_1", Rectangle.class);
+    	System.out.println("trubaPart.getHeight(): " + trubaPart.getWidth());
+    	//trubaPart.setWidth(10.0);
+    	
+    	Group truba2 = lookup(pane, "#Group", Group.class);
+    	truba2.setAutoSizeChildren(true);
+    	truba2.setScaleY(1.5);
+    	truba2.setScaleX(1.5);
+    	
     	
     	
     	transition = FillTransitionBuilder.create()
@@ -112,7 +155,7 @@ public class MouseEventsSample extends Application {
 
                  .build();
 
-        Group root = new Group();
+        final Group root = new Group();
 
         primaryStage.setResizable(false);
 
@@ -136,21 +179,12 @@ public class MouseEventsSample extends Application {
 													
 
         // create circle with method listed below: paramethers: name of the circle, color of the circle, radius
-
         final Circle circleSmall = createCircle("Blue circle", Color.DODGERBLUE, 25);
-
+        initShapeLocation(circleSmall);
         
-		circleSmall.setTranslateX(Double.parseDouble(properties.getProperty("x", new Integer(200).toString())));//200);
-
-        circleSmall.setTranslateY(Double.parseDouble(properties.getProperty("y", new Integer(80).toString())));//80);
-
-        // and a second, bigger circle
 
         final Circle circleBig = createCircle("Orange circle", Color.CORAL, 40);
-
-        circleBig.setTranslateX(300);
-
-        circleBig.setTranslateY(150);
+        initShapeLocation(circleBig);
 
         // we can set mouse event to any node, also on the rectangle
 
@@ -231,15 +265,150 @@ public class MouseEventsSample extends Application {
             }
 
         });
+        
+        final VBox vBoxLeft = new VBox();
+        vBoxLeft.setSpacing(10);
+        vBoxLeft.getChildren().addAll(buttonAdd);
+        
+        buttonAdd.setPrefSize(90, 20);
 
+        buttonAdd.setOnAction(new EventHandler<ActionEvent>() {
+        	public void handle(ActionEvent t) {
+
+            	 try {
+         			 //vBoxLeft.getChildren().addAll(createPane(resourcePath +  "truba2.fxml"));
+         			//panes.add(createPane(resourcePath +  "truba2.fxml"));
+         			root.getChildren().add(createPane(resourcePath +  "truba2.fxml"));
+         		} catch (IOException e) {
+         			// TODO Auto-generated catch block
+         			e.printStackTrace();
+         		}
+            	 
+            }
+
+        });
+        
+       
         // show all the circle , rectangle and console
 
         root.getChildren().addAll(rectangle, circleBig, circleSmall, console);
+        
+       // for(AnchorPane p: panes){
+       // 	root.getChildren().add(p);
+      //  }
+        
+        root.getChildren().add(vBoxLeft);
 
     }
+    
+    private void initShapeLocation(Shape shape) {
+		// TODO Auto-generated method stub
+    	String keyX = shape.getId() + "-x";
+		String propertyX = properties.getProperty(keyX, new Integer(200).toString());
+        String keyY = shape.getId() + "-y";
+		String propertyY = properties.getProperty(keyY, new Integer(80).toString());
+		
+        shape.setTranslateX(Double.parseDouble(propertyX));
+        shape.setTranslateY(Double.parseDouble(propertyY));
+		
+	}
+    
+    private void savePosition(Shape circle) {
+		FileOutputStream out = null;
+		try{
+			out = new FileOutputStream(fileName);
+			String keyX = circle.getId() + "-x";
+			properties.put(keyX, new Double(circle.getTranslateX()).toString());
+			String keyY = circle.getId() + "-y";
+			properties.put(keyY, new Double(circle.getTranslateY()).toString());
+			properties.store(out, title);
+		}
+		
+		catch(FileNotFoundException exception){}
+		catch(IOException exception){}
+		
+		finally{
+			if (out != null){
+				try { 
+					out.flush(); 
+					out.close(); 
+				} catch(Exception exception){}
+			} 
+								
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T lookup(Node parent, String id, Class<T> clazz) {
+        for (Node node : parent.lookupAll(id)) {
+            if (node.getClass().isAssignableFrom(clazz)) {
+                return (T)node;
+            }
+        }
+        throw new IllegalArgumentException("Parent " + parent + " doesn't contain node with id " + id);
+    }
+    
 
     private double newYPosition;
 
+    private AnchorPane createPane(String formName) throws IOException{
+	
+  
+		URL url = getClass().getResource(formName);
+		final AnchorPane pane = (AnchorPane) FXMLLoader.load(url);
+	    	
+		pane.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+             public void handle(MouseEvent me) {
+
+                  //when mouse is pressed, store initial position
+
+                 initX = pane.getTranslateX();
+
+                 initY = pane.getTranslateY();
+
+                 dragAnchor = new Point2D(me.getSceneX(), me.getSceneY());
+
+                // showOnConsole("Mouse pressed above " + name);
+
+             }
+
+         });
+         
+         pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
+
+        	 public void handle(MouseEvent event) {
+         		
+         		 double dragX = event.getSceneX() - dragAnchor.getX();
+                  double dragY = event.getSceneY() - dragAnchor.getY();
+
+                  newXPosition = initX + dragX;
+                  newYPosition = initY + dragY;
+
+                  //if new position do not exceeds borders of the rectangle, translate to this position
+                  pane.setTranslateX(newXPosition);
+                  pane.setTranslateY(newYPosition);
+
+         	}
+ 		});
+    	
+         pane.setOnMouseEntered(new EventHandler<MouseEvent>() {
+ 			public void handle(MouseEvent me) {
+                 final DropShadow dropShadow = new DropShadow();
+                 pane.setEffect(dropShadow);
+             }
+
+         });
+
+         pane.setOnMouseExited(new EventHandler<MouseEvent>() {
+             public void handle(MouseEvent me) {
+                 pane.setEffect(null);
+             }
+
+         });
+    	return pane;
+    }
+    
     private Circle createCircle(final String name, final Color color, int radius) {
 
         //create a circle with desired name,  color and radius
@@ -254,7 +423,9 @@ public class MouseEventsSample extends Application {
         
 		final Circle circle = new Circle(radius, radialGradient);
 
+		circle.setId(name);
         //add a shadow effect
+		 showOnConsole("circle id is:" + circle.getId());
 
         circle.setEffect(new InnerShadow(7, color.darker().darker()));
 
@@ -282,9 +453,6 @@ public class MouseEventsSample extends Application {
         
         circle.setOnMouseDragged(new EventHandler<MouseEvent>() {
 
-          
-			
-
 			public void handle(MouseEvent me) {
 
                 double dragX = me.getSceneX() - dragAnchor.getX();
@@ -311,30 +479,22 @@ public class MouseEventsSample extends Application {
                     showOnConsole(name + " was dragged, y:" + newYPosition +")");
                 }
 
-               
-
             }
 
         });
 
         circle.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
-            
-
 			public void handle(MouseEvent me) {
 
                 //change the z-coordinate of the circle
-
                 circle.toFront();
-                
                
                 transition.setShape(circle);
                 transition.play();
                 
                 showOnConsole("Mouse entered " + name);
-
             }
-
         });
 
         circle.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -380,27 +540,7 @@ public class MouseEventsSample extends Application {
 
                 showOnConsole("Mouse released above " +name + " x: " + circle.getTranslateX() + " y: " + circle.getTranslateY());
 
-                FileOutputStream out = null;
-				try{
-					out = new FileOutputStream(fileName);
-					properties.put("x", new Double(circle.getTranslateX()).toString());
-					properties.put("y", new Double(circle.getTranslateY()).toString());
-					properties.store(out, title);
-				}
-				
-				catch(FileNotFoundException exception){}
-				catch(IOException exception){}
-				
-				finally{
-					if (out != null){
-						try { 
-							out.flush(); 
-							out.close(); 
-						} catch(Exception exception){}
-					} 
-										
-				}
-				
+                savePosition(circle);
             }
 
         });
@@ -412,7 +552,9 @@ public class MouseEventsSample extends Application {
     }
 
  
-    
+
+	
+	
     private void showOnConsole(String text) {
 
          //if there is 8 items in list, delete first log message, shift other logs and  add a new one to end position
