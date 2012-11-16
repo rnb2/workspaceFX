@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -110,21 +111,23 @@ public class MouseEventsSample extends Application {
     private double newXPosition;
     
     private void init(Stage primaryStage) {
-    	
+    	final Group root = new Group();
       	       
     	AnchorPane pane = null;
     	AnchorPane pane2 = null;
     	
+    	 int i = getElementIndex(root);
+    	
 		try {
-			pane = createPane(resourcePath +  "truba2.fxml");
-			pane2 = createPane(resourcePath +  "truba2.fxml");
+			pane = createPane(resourcePath +  "truba2.fxml", String.valueOf(i));
+			//pane2 = createPane(resourcePath +  "truba2.fxml");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		final ArrayList<AnchorPane> panes = new ArrayList<AnchorPane>();
-		panes.add(pane2);
+		//panes.add(pane2);
 		panes.add(pane);
 		
     	
@@ -155,7 +158,7 @@ public class MouseEventsSample extends Application {
 
                  .build();
 
-        final Group root = new Group();
+        
 
         primaryStage.setResizable(false);
 
@@ -276,10 +279,14 @@ public class MouseEventsSample extends Application {
         	public void handle(ActionEvent t) {
 
             	 try {
-         			 //vBoxLeft.getChildren().addAll(createPane(resourcePath +  "truba2.fxml"));
-         			//panes.add(createPane(resourcePath +  "truba2.fxml"));
-         			root.getChildren().add(createPane(resourcePath +  "truba2.fxml"));
-         		} catch (IOException e) {
+            		 int i= getElementIndex(root);
+            		 String id = String.valueOf(i);
+					AnchorPane createPane = createPane(resourcePath +  "truba2.fxml", id);
+            		 initShapeLocation(createPane);
+
+            		 root.getChildren().add(createPane);
+
+             		} catch (IOException e) {
          			// TODO Auto-generated catch block
          			e.printStackTrace();
          		}
@@ -300,7 +307,38 @@ public class MouseEventsSample extends Application {
         root.getChildren().add(vBoxLeft);
 
     }
+
+	private <T> int dd(T s){
+		s.getClass();
+		
+		//dd.get
+		return 0;
+		
+	}
+	
+	private<T> int getElementIndex(Group root){
+		int i=0;
+		 for(Node node: root.getChildren()){
+			 if (node instanceof AnchorPane) {
+				AnchorPane new_name = (AnchorPane) node;
+				i++;
+			}
+		 }	 
+		return i;	 
+	}	
     
+	private void initShapeLocation(AnchorPane shape) {
+		// TODO Auto-generated method stub
+    	String keyX = shape.getId() + "-x";
+		String propertyX = properties.getProperty(keyX, new Integer(200).toString());
+        String keyY = shape.getId() + "-y";
+		String propertyY = properties.getProperty(keyY, new Integer(80).toString());
+		
+        shape.setTranslateX(Double.parseDouble(propertyX));
+        shape.setTranslateY(Double.parseDouble(propertyY));
+		
+	}
+	
     private void initShapeLocation(Shape shape) {
 		// TODO Auto-generated method stub
     	String keyX = shape.getId() + "-x";
@@ -311,6 +349,31 @@ public class MouseEventsSample extends Application {
         shape.setTranslateX(Double.parseDouble(propertyX));
         shape.setTranslateY(Double.parseDouble(propertyY));
 		
+	}
+    
+    private void savePosition(AnchorPane pane) {
+		FileOutputStream out = null;
+		try{
+			out = new FileOutputStream(fileName);
+			String keyX = pane.getId() + "-x";
+			properties.put(keyX, new Double(pane.getTranslateX()).toString());
+			String keyY = pane.getId() + "-y";
+			properties.put(keyY, new Double(pane.getTranslateY()).toString());
+			properties.store(out, title);
+		}
+		
+		catch(FileNotFoundException exception){}
+		catch(IOException exception){}
+		
+		finally{
+			if (out != null){
+				try { 
+					out.flush(); 
+					out.close(); 
+				} catch(Exception exception){}
+			} 
+								
+		}
 	}
     
     private void savePosition(Shape circle) {
@@ -351,12 +414,13 @@ public class MouseEventsSample extends Application {
 
     private double newYPosition;
 
-    private AnchorPane createPane(String formName) throws IOException{
+    private AnchorPane createPane(String formName, String id) throws IOException{
 	
   
 		URL url = getClass().getResource(formName);
 		final AnchorPane pane = (AnchorPane) FXMLLoader.load(url);
-	    	
+	    
+		pane.setId(id);
 		pane.setOnMousePressed(new EventHandler<MouseEvent>() {
 
              public void handle(MouseEvent me) {
@@ -406,6 +470,14 @@ public class MouseEventsSample extends Application {
              }
 
          });
+         
+         pane.setOnMouseReleased(new EventHandler<MouseEvent>() {
+             public void handle(MouseEvent me) {
+                 savePosition(pane);
+             }
+
+         });
+
     	return pane;
     }
     
