@@ -182,11 +182,11 @@ public class MouseEventsSample extends Application {
 													
 
         // create circle with method listed below: paramethers: name of the circle, color of the circle, radius
-        final Circle circleSmall = createCircle("Blue circle", Color.DODGERBLUE, 25);
+        final Circle circleSmall = createCircle("Blue_circle", Color.DODGERBLUE, 25);
         initShapeLocation(circleSmall);
         
 
-        final Circle circleBig = createCircle("Orange circle", Color.CORAL, 40);
+        final Circle circleBig = createCircle("Orange_circle", Color.CORAL, 40);
         initShapeLocation(circleBig);
 
         // we can set mouse event to any node, also on the rectangle
@@ -280,7 +280,7 @@ public class MouseEventsSample extends Application {
 
             	 try {
             		 int i= getElementIndex(root);
-            		 String id = String.valueOf(i);
+            		 String id = "truba_" + String.valueOf(i);
 					AnchorPane createPane = createPane(resourcePath +  "truba2.fxml", id);
             		 initShapeLocation(createPane);
 
@@ -307,14 +307,6 @@ public class MouseEventsSample extends Application {
         root.getChildren().add(vBoxLeft);
 
     }
-
-	private <T> int dd(T s){
-		s.getClass();
-		
-		//dd.get
-		return 0;
-		
-	}
 	
 	private<T> int getElementIndex(Group root){
 		int i=0;
