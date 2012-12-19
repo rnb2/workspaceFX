@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -23,11 +24,16 @@ public class MainApp extends Application {
 	private ObservableList<Person> personList = FXCollections.observableArrayList();
 	
 
+	public MainApp() {
+		initPersonList();
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle(title);
 		
+			
 		try {
 	          // Load the root layout from the fxml file
 	          FXMLLoader loader = new FXMLLoader(MainApp.class.getResource(string_resource + "RootLayout.fxml"));
@@ -41,17 +47,15 @@ public class MainApp extends Application {
 	      }
 		
 		showPersonDetail();
-		
-		initPersonList();
+	
 		
 	}
 	
 	
 	private void initPersonList() {
-		// TODO Auto-generated method stub
-		personList.add(new Person("Вася","Пупкин"));
-		personList.add(new Person("Петя","Ленын"));
-		personList.add(new Person("Ёся","Сидоров"));
+		personList.add(new Person("Вася","Пупкин", "Киевская"));
+		personList.add(new Person("Петя","Ленын","Московская"));
+		personList.add(new Person("Ёся","Сидоров", "Любая"));
 		
 	}
 
@@ -62,11 +66,43 @@ public class MainApp extends Application {
 	          FXMLLoader loader = new FXMLLoader(MainApp.class.getResource(string_resource + "PersonOverView.fxml"));
 	          AnchorPane anchorPane = (AnchorPane) loader.load();
 	          rootPane.setCenter(anchorPane);
-	        
+	          
+	          
+	          PersonOverviewController overviewController = loader.getController();
+	          overviewController.setMainApp(this);
+	          
 	      } catch (IOException e) {
 	          // Exception gets thrown if the fxml file could not be loaded
 	          e.printStackTrace();
 	      }
+	}
+	
+	public boolean showPersonEdit(Person p){
+		 
+         try {
+        	FXMLLoader loader = new FXMLLoader(MainApp.class.getResource(string_resource + "PersonEditDialog.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+			Stage dialogStage = new Stage();
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			
+			PersonEditDialogController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			controller.setPerson(p);
+			
+			dialogStage.showAndWait();
+			return controller.isOkClicked();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			 
+	         return false;	
+		}
+        
 	}
 
 

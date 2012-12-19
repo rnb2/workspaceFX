@@ -18,12 +18,12 @@ public class Person {
 
 	
 
-	public Person(String firstName, String lastName) {
+	public Person(String firstName, String lastName, String street) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		
-		this.street = "some street";
+		this.street = street;
 	    this.postalCode = 1234;
 	    this.city = "some city";
 	    this.birthday = Calendar.getInstance();

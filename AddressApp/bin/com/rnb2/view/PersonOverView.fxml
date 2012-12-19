@@ -4,18 +4,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="com.rnb2.adress.PersonOverviewController">
   <!-- TODO Add Nodes -->
   <children>
     <SplitPane dividerPositions="0.451505016722408" focusTraversable="true" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
           <children>
-            <TableView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <TableView fx:id="personTable" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
               <columns>
-                <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="100.0" text="First Name" />
-                <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="100.0" text="Last Name" />
+                <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="100.0" text="First Name" fx:id="firstNameColumn" />
+                <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="100.0" text="Last Name" fx:id="lastNameColumn" />
               </columns>
             </TableView>
           </children>
@@ -27,8 +28,14 @@
               <children>
                 <Label text="Имя:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                 <Label text="Фамилия:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label fx:id="firstNameLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                  <textFill>
+                    <Color blue="0.800" green="0.320" red="0.000" fx:id="x1" />
+                  </textFill>
+                </Label>
+                <Label fx:id="lastNameLabel" text="Label" textFill="$x1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label text="Адрес:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Label fx:id="streetLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
               </children>
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -44,9 +51,9 @@
             </GridPane>
             <HBox id="HBox" alignment="CENTER" layoutX="118.0" layoutY="349.0" spacing="7.0">
               <children>
-                <Button mnemonicParsing="false" text="Добавить..." />
-                <Button mnemonicParsing="false" text="Ред..." />
-                <Button mnemonicParsing="false" text="Удал..." />
+                <Button mnemonicParsing="false" onAction="#showAddPerson" text="Добавить..." />
+                <Button mnemonicParsing="false" onAction="#showPersonEdit" text="Ред..." />
+                <Button mnemonicParsing="false" onAction="#deletePerson" text="Удал..." />
               </children>
             </HBox>
           </children>
